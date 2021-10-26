@@ -22,3 +22,7 @@ So basically for these projects to be at all useful we obviously need a way to d
    - Cons: we would only be able to work with the APIs made available by Google for its workspace extensions. Also we need to set up a Google authentication project
 
 *technically you need a Google developer's license to "publish" Workspace addons but I already have one from a while ago I think
+
+**Resources:**
+ - https://github.com/explorercorps/explorercorps.github.io
+ - https://github.com/BrettlesSr/roas-ang-map
