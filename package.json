@@ -1,0 +1,60 @@
+{
+  "name": "react-quickstart",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel src/index.html --no-cache --open",
+    "build": "parcel build src/index.html --public-url / --out-dir dist --no-source-maps --no-cache",
+    "test": "jest test",
+    "test:watch": "jest --watchAll"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.7.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.20.6",
+    "husky": "^4.2.5",
+    "jest": "^26.4.0",
+    "lint-staged": "^10.2.11",
+    "parcel-bundler": "^1.12.4",
+    "prettier": "^2.1.0"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "axios": "^0.20.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "reactn": "^2.2.7",
+    "styled-components": "^5.1.1",
+    "wouter": "^2.5.1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "plugin:prettier/recommended"
+    ]
+  },
+  "prettier": {
+    "bracketSpacing": true
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run test && lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.+(js|jsx)": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.+(json|css|md|jsx)": [
+      "prettier --write"
+    ]
+  }
+}
