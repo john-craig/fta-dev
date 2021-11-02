@@ -35,10 +35,6 @@ const Canvas = props => {
   var totDim = []
   var mapData = []
 
-  /* Working variables */
-  var scaleFactor
-  var logVpPos
-
   //const []
   const canvasRef = useRef(null)
 
@@ -73,7 +69,30 @@ const Canvas = props => {
       "connections": []
     }
 
-    scaleFactor = getScaleFactor()
+    console.log(vpDim)
+
+    //Scale factor
+    const scaleFactor = getScaleFactor(vpDim, unitSize, zoom)
+
+    //Logical positions and dimensions of viewport and canvas
+    const logVpPos = getLogicalViewportPosition(vpPos, scaleFactor)
+    const logVpDim = getLogicalViewportDimensions(vpDim, zoom)
+    const logTotDim = getLogicalTotalDimensions(totDim, scaleFactor)
+
+    //Logical positions of systems and connections
+    const logVisSys = getLogicallyVisibleSystems(mapData, logVpPos, logVpDim, logTotDim)
+    const logVisCons = getLogicallyVisibleConnections(mapData, logVisSys, logTotDim)
+
+    //Relative positions of systems and connections
+    const relSys = getRelativeSystemPositions(logVisSys, logVpPos, scaleFactor)
+    const relCons = getRelativeConnectionPositions(logVisCons, logVpDim, scaleFactor)
+
+    //Relative positions of system rectangles and connection lines
+    const relSysRects = getRelativeSystemRectangles(relSys, unitSize)
+    const relConLines = getRelativeConnectionLines(relCons)
+
+    //Drawing of system rectangles and connection lines
+    drawMap(relSysRects, relConLines, context)
 
     /*
 
@@ -84,10 +103,13 @@ const Canvas = props => {
   }, [])
   
 
-  function getScaleFactor(){
+  function getScaleFactor(vpDim, unitSize, zoom){
     return Math.min(...vpDim) / (unitSize * zoom)
   }
 
+ /*
+    Logical Calculation Functions
+ */
 
   function getLogicalViewportPosition(vpPos, scaleFactor){
     return [
@@ -149,6 +171,10 @@ const Canvas = props => {
     }, [])
   }
 
+  /*
+    Relative Calculation Functions
+  */
+
   function getRelativePosition(logPos, logVpPos, scaleFactor){
     return [
       (logPos[0] - logVpPos[0]) * scaleFactor,
@@ -162,33 +188,47 @@ const Canvas = props => {
     })
   }
 
-  function getRelativeConnectionPositions(logVisCons, relSys, logVpPos, scaleFactor){
+  function getRelativeConnectionPositions(logVisCons, logVpPos, scaleFactor){
     return logVisCons.map(function(con){
-      ret
+      return Object.keys(con).map(function(key){
+        return getRelativePosition(con[key], logVpPos, scaleFactor)
+      })
     })
   }
 
-  function getRelativeSystemRectangle(relPos, unitSize){
-    return {
-      'x': relPos[0] - (unitSize /2),
-      'x': relPos[1] - (unitSize /2),
-      'w': unitSize,
-      'h': unitSize
-    }
+  function getRelativeSystemRectangles(relSys, unitSize){
+    return Object.keys(relSys).reduce(function(previous, key){
+      const relPos = relSys[key]
+
+      return previous[key] = {
+        'x': relPos[0] - (unitSize /2),
+        'x': relPos[1] - (unitSize /2),
+        'w': unitSize,
+        'h': unitSize
+      }
+    }, {})
   }
 
-  function getRelativeConnectionLine(relPosA, relPosB){
-    return [
-      {
-        'x': relPosA[0],
-        'y': relPosA[1]
-      },
-      {
-        'x': relPosB[0],
-        'y': relPosB[1]
-      }
-    ]
+  function getRelativeConnectionLines(relCons){
+    return relCons.map(function(con){
+      const relConPos = Object.values(con)
+
+      return [
+        {
+          'x': relConPos[0][0],
+          'y': relConPos[0][1]
+        },
+        {
+          'x': relConPos[1][0],
+          'y': relConPos[1][1]
+        }
+      ]
+    })
   }
+
+  /*
+    Drawing Functions
+  */
 
   function drawSystemRectangle(sysRect, context){
     //To do: handle colors and images
@@ -216,6 +256,16 @@ const Canvas = props => {
       conLine[1]['y']
     );
     context.fill();
+  }
+
+  function drawMap(relSysRects, relConLines, context){
+    Object.keys(relSysRects).forEach(function(sysRect){
+      drawSystemRectangle(sysRect, context)
+    })
+
+    relConLines.forEach(function(conLine){
+      drawConnectionLine(conLine, context)
+    })
   }
 
   return <canvas ref={canvasRef} {...props}/>
