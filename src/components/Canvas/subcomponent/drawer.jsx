@@ -1,5 +1,16 @@
 import { MinimizeTwoTone } from '@material-ui/icons'
 import React, { useRef, useEffect } from 'react'
+import {
+  getScaleFactor
+} from '../utils/miscUtils'
+import {
+  getLogicalViewportDimensions, getLogicalViewportPosition,
+  getLogicalTotalDimensions, getLogicallyVisibleSystems, getLogicallyVisibleConnections
+} from '../utils/logicalUtils'
+import {
+  getRelativeConnectionPositions, getRelativeSystemPositions,
+  getRelativeConnectionLines, getRelativeSystemRectangles
+} from '../utils/relativeUtils'
 
 /*
 
@@ -34,29 +45,15 @@ const Drawer = props => {
   var totDim = []
   var mapData = []
 
-  //const []
   const canvasRef = useRef(null)
 
   useEffect(() => {
     const zoom = props.zoom
-    console.log(zoom)
+    const vpDim = props.vpDim
+    const mapData = props.mapData
 
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
-
-
-    // vpDim = [
-    //   1000,
-    //   800
-    // ]
-
-    vpDim = [
-      context.canvas.width,
-      context.canvas.height
-    ]
-
-    var canvas_width = context.canvas.clientWidth;
-    var canvas_height = context.canvas.clientHeight;
 
     context.fillStyle = '#999999'
     context.fillRect(0, 0, vpDim[0], vpDim[1])
@@ -72,23 +69,6 @@ const Drawer = props => {
       (totDim[0] - vpDim[0]) / 2,
       (totDim[1] - vpDim[1]) / 2,
     ]
-
-    mapData = {
-      "systems": {
-        "0": {
-          "pos": [0, 0]
-        },
-        "1": {
-          "pos": [2, 1]
-        },
-        "2": {
-          "pos": [-3, -1]
-        }
-      },
-      "connections": [
-        ["0", "1"]
-      ]
-    }
 
     console.log("*** BASE ACTUALS ***")
     console.log("Actual Viewport Dimensions: ", vpDim)
@@ -149,150 +129,6 @@ const Drawer = props => {
     */
   }, [props])
   
-
-  function getScaleFactor(vpDim, unitSize, zoom){
-    return Math.min(...vpDim) / (unitSize * zoom)
-  }
-
- /*
-    Logical Calculation Functions
- */
-
-  function getLogicalViewportPosition(vpPos, scaleFactor){
-    return [
-      vpPos[0] / scaleFactor,
-      vpPos[1] / scaleFactor
-    ]
-  }
-
-  function getLogicalViewportDimensions(vpDim, scaleFactor){
-    // return [
-    //   (vpDim[0] == Math.min(...vpDim)) ? zoom : (Math.max(...vpDim) / Math.min(...vpDim)) * zoom,
-    //   (vpDim[1] == Math.min(...vpDim)) ? zoom : (Math.max(...vpDim) / Math.min(...vpDim)) * zoom,
-    // ]
-    return [
-      vpDim[0] / scaleFactor,
-      vpDim[1] / scaleFactor
-    ]
-  }
-
-  function getLogicalTotalDimensions(totDim, scaleFactor){
-    return [
-      totDim[0] / scaleFactor,
-      totDim[1] / scaleFactor
-    ]
-  }
-
-  function getLogicalPosition(pos, logTotDim){
-    return [
-      pos[0] + (logTotDim[0] / 2),
-      pos[1] + (logTotDim[1] / 2),
-    ]
-  }
-
-  function logicallyInsideViewport(logPos, logVpPos, logVpDim){
-    return logPos[0] > logVpPos[0] && logPos[0] < (logVpPos[0]+ logVpDim[0]) &&
-      logPos[1] > logVpPos[1] && logPos[1] < (logVpPos[1]+ logVpDim[0])
-  }
-
-  function getLogicallyVisibleSystems(mapData, logVpPos, logVpDim, logTotDim){
-    const systems = mapData['systems']
-
-    return Object.keys(systems).reduce(function (previous, key) {
-      const logPos = getLogicalPosition(systems[key]['pos'], logTotDim)
-
-      //console.log("Logical Position of System ", key, ": ", logPos)
-
-      if (logicallyInsideViewport(logPos, logVpPos, logVpDim)) {
-        previous[key] = logPos
-      }
-
-      return previous
-    }, {});
-  }
-
-  function getLogicallyVisibleConnections(mapData, logVisSys, logTotDim){
-    const connections = mapData['connections']
-    const systems = mapData['systems']
-
-    return connections.reduce(function(previous, con){
-      const conIdA = con[0]
-      const conIdB = con[1]
-
-      if(conIdA in logVisSys || conIdB in logVisSys){
-        previous.push({
-          conIdA: (conIdA in logVisSys) ? logVisSys[conIdA] : getLogicalPosition(systems[conIdA], logTotDim),
-          conIdB: (conIdB in logVisSys) ? logVisSys[conIdB] : getLogicalPosition(systems[conIdB], logTotDim)
-        })
-      }
-
-      return previous
-    }, [])
-  }
-
-  /*
-    Relative Calculation Functions
-  */
-
-  function getRelativePosition(logPos, logVpPos, scaleFactor){
-    return [
-      (logPos[0] - logVpPos[0]) * scaleFactor,
-      (logPos[1] - logVpPos[1]) * scaleFactor
-    ]
-  }
-
-  function getRelativeSystemPositions(logVisSys, logVpPos, scaleFactor){
-    return Object.keys(logVisSys).map(function(key){
-
-      const relPos = getRelativePosition(logVisSys[key], logVpPos, scaleFactor)
-
-      //console.log("Relative System Position:  ", relPos)
-
-      return relPos
-    })
-  }
-
-  function getRelativeConnectionPositions(logVisCons, logVpPos, scaleFactor){
-    return logVisCons.map(function(con){
-      return Object.keys(con).map(function(key){
-
-        return getRelativePosition(con[key], logVpPos, scaleFactor)
-      })
-    })
-  }
-
-  function getRelativeSystemRectangles(relSys, unitSize){
-    return Object.keys(relSys).reduce(function(previous, key){
-      const relPos = relSys[key]
-
-      previous[key] = {
-        'x': relPos[0] - (unitSize /2),
-        'y': relPos[1] - (unitSize /2),
-        'w': unitSize,
-        'h': unitSize
-      }
-
-      return previous
-    }, {})
-  }
-
-  function getRelativeConnectionLines(relCons){
-    return relCons.map(function(con){
-      const relConPos = Object.values(con)
-
-      return [
-        {
-          'x': relConPos[0][0],
-          'y': relConPos[0][1]
-        },
-        {
-          'x': relConPos[1][0],
-          'y': relConPos[1][1]
-        }
-      ]
-    })
-  }
-
   /*
     Drawing Functions
   */
@@ -340,8 +176,8 @@ const Drawer = props => {
 
   return <canvas 
     ref={canvasRef} 
-    width="1000px"
-    height="600px"
+    width={props.vpDim[0]}
+    height={props.vpDim[1]}
     {...props}
   />
 }
