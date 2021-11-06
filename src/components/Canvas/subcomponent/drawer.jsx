@@ -1,8 +1,12 @@
 import { MinimizeTwoTone } from '@material-ui/icons'
 import React, { useRef, useEffect } from 'react'
 import {
-  getScaleFactor
+  getScaleFactor,
+  resolveSystemSelection
 } from '../utils/miscUtils'
+import {
+  getActualTotalDimensions, getActualViewportPosition
+} from '../utils/actualUtils'
 import {
   getLogicalViewportDimensions, getLogicalViewportPosition,
   getLogicalTotalDimensions, getLogicallyVisibleSystems, getLogicallyVisibleConnections
@@ -37,20 +41,16 @@ import {
 */
 
 const Drawer = props => {
-  const unitSize = 10
-
-  /* These should be passed in as props */
-  var vpDim = []
-  var vpPos = []
-  var totDim = []
-  var mapData = []
-
   const canvasRef = useRef(null)
+
+  const unitSize = 20
 
   useEffect(() => {
     const zoom = props.zoom
     const vpDim = props.vpDim
+    const vpOff = props.vpOff
     const mapData = props.mapData
+    const targSys = props.targSys
 
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
@@ -58,94 +58,104 @@ const Drawer = props => {
     context.fillStyle = '#999999'
     context.fillRect(0, 0, vpDim[0], vpDim[1])
 
-    //Temporary
-    totDim = [
-      vpDim[0] * 10,
-      vpDim[1] * 10,
-    ]
-    
-    //Temporary
-    vpPos = [
-      (totDim[0] - vpDim[0]) / 2,
-      (totDim[1] - vpDim[1]) / 2,
-    ]
-
-    console.log("*** BASE ACTUALS ***")
-    console.log("Actual Viewport Dimensions: ", vpDim)
-    console.log("Actual Viewport Position:   ", vpPos)
-    console.log("Actual Total Dimensions:    ", totDim)
-
     //Scale factor
     const scaleFactor = getScaleFactor(vpDim, unitSize, zoom)
 
-    console.log("*** ZOOM ACTUALS ***")
-    console.log("Zoom:          ", zoom)
-    console.log("Unit Size:     ", unitSize)
-    console.log("Scale Factor:  ", scaleFactor)
+    // console.log("*** ZOOM ACTUALS ***")
+    // console.log("Zoom:          ", zoom)
+    // console.log("Unit Size:     ", unitSize)
+    // console.log("Scale Factor:  ", scaleFactor)
+
+    //Determine the calculable actual dimensions in pixels
+    const totDim = getActualTotalDimensions(mapData, vpDim, scaleFactor)
+    const vpPos = getActualViewportPosition(targSys, vpDim, vpOff, totDim, scaleFactor)
+
+    // console.log("*** BASE ACTUALS ***")
+    // console.log("Actual Viewport Dimensions: ", vpDim)
+    // console.log("Actual Viewport Position:   ", vpPos)
+    // console.log("Actual Total Dimensions:    ", totDim)
 
     //Logical positions and dimensions of viewport and canvas
     const logVpPos = getLogicalViewportPosition(vpPos, scaleFactor)
     const logVpDim = getLogicalViewportDimensions(vpDim, scaleFactor)
     const logTotDim = getLogicalTotalDimensions(totDim, scaleFactor)
 
-    console.log("*** BASE LOGICALS ***")
-    console.log("Logical Viewport Dimensions: ", logVpDim)
-    console.log("Logical Viewport Position:   ", logVpPos)
-    console.log("Logical Total Dimensions:    ", logTotDim)
+    // console.log("*** BASE LOGICALS ***")
+    // console.log("Logical Viewport Dimensions: ", logVpDim)
+    // console.log("Logical Viewport Position:   ", logVpPos)
+    // console.log("Logical Total Dimensions:    ", logTotDim)
 
     //Logical positions of systems and connections
     const logVisSys = getLogicallyVisibleSystems(mapData, logVpPos, logVpDim, logTotDim)
     const logVisCons = getLogicallyVisibleConnections(mapData, logVisSys, logTotDim)
 
-    console.log("*** MAP LOGICALS ***")
-    console.log("Logically Visible Systems:       ", logVisSys)
-    console.log("Logically Visible Connections:   ", logVisCons)
+    // console.log("*** MAP LOGICALS ***")
+    // console.log("Logically Visible Systems:       ", logVisSys)
+    // console.log("Logically Visible Connections:   ", logVisCons)
 
     //Relative positions of systems and connections
     const relSys = getRelativeSystemPositions(logVisSys, logVpPos, scaleFactor)
     const relCons = getRelativeConnectionPositions(logVisCons, logVpPos, scaleFactor)
 
-    console.log("*** MAP RELATIVES ***")
-    console.log("Relative System Positions:       ", relSys)
-    console.log("Relative Connection Positions:   ", relCons)
+    // console.log("*** MAP RELATIVES ***")
+    // console.log("Relative System Positions:       ", relSys)
+    // console.log("Relative Connection Positions:   ", relCons)
 
     //Relative positions of system rectangles and connection lines
     const relSysRects = getRelativeSystemRectangles(relSys, unitSize)
     const relConLines = getRelativeConnectionLines(relCons)
 
+    //If selection position is defined, we should resolve it
+    if (props.selPos){
+      const selSysId = resolveSystemSelection(props.selPos, relSysRects)
 
-    console.log("*** DRAWN RELATIVES ***")
-    console.log("Relative System Rectangles:  ", relSysRects)
-    console.log("Relative Connection Lines:   ", relConLines)
+      //This will either set the target system to the system
+      //which was collided with, or it will unset the "selectedPosition"
+      //variable in the parent, preventing collision detection from
+      //being repeated.
+      props.setTargSys(selSysId)
+    }
+
+    // console.log("*** DRAWN RELATIVES ***")
+    // console.log("Relative System Rectangles:  ", relSysRects)
+    // console.log("Relative Connection Lines:   ", relConLines)
 
     //Drawing of system rectangles and connection lines
-    drawMap(relSysRects, relConLines, context)
-
-    /*
-
-    //Our first draw
-    context.fillStyle = '#0000ff'
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height)
-    */
-  }, [props])
+    drawMap(
+      relSysRects, 
+      relConLines, 
+      props.sysIcon,
+      context)
+  }, [
+    props.zoom,
+    props.vpOff,
+    props.selPos,
+    props.targSys
+  ])
   
   /*
     Drawing Functions
   */
 
-  function drawSystemRectangle(sysRect, context){
+  function drawSystemRectangle(sysRect, sysIcon, context){
     //To do: handle colors and images
-    context.fillStyle = '#0000ff'
 
     //console.log("Drawing Rect:  ", sysRect)
+    context.fillStyle = "ff00ff";
 
-    context.fillRect(
+    context.drawImage(
+      sysIcon,
       sysRect['x'],
       sysRect['y'],
       sysRect['w'],
       sysRect['h'],
     )
-    //context.fillRect(100, 100, 50, 50)
+    // context.fillRect(
+    //   sysRect['x'],
+    //   sysRect['y'],
+    //   sysRect['w'],
+    //   sysRect['h'],
+    // )
   }
 
   function drawConnectionLine(conLine, context){
@@ -164,13 +174,13 @@ const Drawer = props => {
     context.stroke();
   }
 
-  function drawMap(relSysRects, relConLines, context){
+  function drawMap(relSysRects, relConLines, sysIcon, context){
     relConLines.forEach(function(conLine){
       drawConnectionLine(conLine, context)
     })
 
     Object.keys(relSysRects).forEach(function(key){
-      drawSystemRectangle(relSysRects[key], context)
+      drawSystemRectangle(relSysRects[key], sysIcon, context)
     })
   }
 

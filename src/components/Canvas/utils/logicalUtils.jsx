@@ -80,10 +80,10 @@ export function getLogicallyVisibleConnections(mapData, logVisSys, logTotDim){
         const conIdB = con[1]
 
         if(conIdA in logVisSys || conIdB in logVisSys){
-        previous.push({
-            conIdA: (conIdA in logVisSys) ? logVisSys[conIdA] : getLogicalPosition(systems[conIdA], logTotDim),
-            conIdB: (conIdB in logVisSys) ? logVisSys[conIdB] : getLogicalPosition(systems[conIdB], logTotDim)
-        })
+            previous.push({
+                conIdA: (conIdA in logVisSys) ? logVisSys[conIdA] : getLogicalPosition(systems[conIdA]['pos'], logTotDim),
+                conIdB: (conIdB in logVisSys) ? logVisSys[conIdB] : getLogicalPosition(systems[conIdB]['pos'], logTotDim)
+            })
         }
 
         return previous

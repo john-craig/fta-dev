@@ -19,7 +19,7 @@ export function getRelativeSystemPositions(logVisSys, logVpPos, scaleFactor){
       previous[key] = relPos
 
       return previous
-    })
+    }, {})
   }
 
 //Returns an array containing the relative positions of both systems in

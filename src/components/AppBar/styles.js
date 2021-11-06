@@ -6,6 +6,8 @@ import styled from "styled-components";
 
 export const AppBarStyle = styled(Bar)`
   border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
+  position: absolute;
+  z-index: 1;
 `;
 
 export const ToolbarStyle = styled(Toolbar)`
