@@ -2,6 +2,7 @@ import React from 'react'
 import Drawer from './subcomponent/drawer'
 
 import SystemIcon from "../../assets/images/solar-system.png"
+import MapBackground from "../../assets/images/background.jpg"
 
 export default class Canvas extends React.Component {
 
@@ -12,17 +13,46 @@ export default class Canvas extends React.Component {
         const mapData = {
             "systems": {
               "0": {
-                "pos": [0, 0]
+                "pos": [0, 0],
+                "name": "Sol"
               },
               "1": {
-                "pos": [2, 1]
+                "pos": [2, 1],
+                "name": "Mu Herculis"
               },
               "2": {
-                "pos": [-3, -1]
+                "pos": [-3, -1],
+                "name": "Alpha Centauri"
+              },
+              "3": {
+                "pos": [-6, 2],
+                "name": "Wolf 359"
+              },
+              "4": {
+                "pos": [4, -3],
+                "name": "Sirius"
+              },
+              "5": {
+                "pos": [6, -3],
+                "name": "Lambda Serpentis"
+              },
+              "6": {
+                "pos": [-9, -3],
+                "name": "Lalande 21185"
+              },
+              "7": {
+                "pos": [22, 5],
+                "name": "Achelinde"
               }
             },
             "connections": [
-              ["0", "1"]
+              ["0", "1"],
+              ["3", "6"],
+              ["1", "3"],
+              ["1", "4"],
+              ["5", "4"],
+              ["3", "2"],
+              ["1", "7"]
             ]
           }
 
@@ -36,7 +66,8 @@ export default class Canvas extends React.Component {
         }
 
         this.handleSysIconLoad = this.handleSysIconLoad.bind(this)
-        
+        this.handleMapBgLoad = this.handleMapBgLoad.bind(this)
+
         this.handleScroll = this.handleScroll.bind(this);
         this.handleMouseClick = this.handleMouseClick.bind(this)
         this.handleMouseMovement = this.handleMouseMovement.bind(this)
@@ -50,10 +81,15 @@ export default class Canvas extends React.Component {
         this.updateWindowDimensions();
         window.addEventListener('resize', this.updateWindowDimensions);
 
+        //Load System Icon
         const sysIconImg = new Image()
         sysIconImg.src = SystemIcon
-
         sysIconImg.onload = this.handleSysIconLoad
+
+        //Load Map Background
+        const mapBgImg = new Image()
+        mapBgImg.src = MapBackground
+        mapBgImg.onload = this.handleMapBgLoad
       }
       
     componentWillUnmount() {
@@ -72,6 +108,14 @@ export default class Canvas extends React.Component {
 
         this.setState({
             sysIcon: sysIcon
+        })
+    }
+
+    handleMapBgLoad(event){
+        const mapBg = event.target
+
+        this.setState({
+            mapBackground: mapBg
         })
     }
 
@@ -166,7 +210,9 @@ export default class Canvas extends React.Component {
         const mapData = this.state['mapData']
         const targSys = this.state['targetSystem']
         const selectionPosition = this.state['selectionPosition']
+
         const sysIcon = this.state['sysIcon']
+        const mapBg = this.state['mapBackground']
 
         return <div
             onWheel={this.handleScroll}
@@ -183,6 +229,7 @@ export default class Canvas extends React.Component {
         > {
             (vpDim[0] != -1) &&
             (sysIcon) &&
+            (mapBg) &&
             <Drawer
                 zoom={zoom}
                 vpDim={vpDim}
@@ -194,6 +241,7 @@ export default class Canvas extends React.Component {
                 setTargSys={this.setTargetSystem}
 
                 sysIcon={sysIcon}
+                mapBg={mapBg}
             />
         }
         </div>

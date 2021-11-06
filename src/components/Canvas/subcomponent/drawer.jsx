@@ -55,8 +55,9 @@ const Drawer = props => {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
 
-    context.fillStyle = '#999999'
-    context.fillRect(0, 0, vpDim[0], vpDim[1])
+    // context.fillStyle = '#999999'
+    // context.fillRect(0, 0, vpDim[0], vpDim[1])
+    context.drawImage(props.mapBg, 0, 0, vpDim[0], vpDim[1])
 
     //Scale factor
     const scaleFactor = getScaleFactor(vpDim, unitSize, zoom)
@@ -102,7 +103,7 @@ const Drawer = props => {
     // console.log("Relative Connection Positions:   ", relCons)
 
     //Relative positions of system rectangles and connection lines
-    const relSysRects = getRelativeSystemRectangles(relSys, unitSize)
+    const relSysRects = getRelativeSystemRectangles(relSys, scaleFactor)
     const relConLines = getRelativeConnectionLines(relCons)
 
     //If selection position is defined, we should resolve it
@@ -124,6 +125,7 @@ const Drawer = props => {
     drawMap(
       relSysRects, 
       relConLines, 
+      mapData,
       props.sysIcon,
       context)
   }, [
@@ -137,30 +139,37 @@ const Drawer = props => {
     Drawing Functions
   */
 
-  function drawSystemRectangle(sysRect, sysIcon, context){
-    //To do: handle colors and images
-
+  function drawSystemRectangle(
+    sysRect,
+    sysName,
+    sysIcon, 
+    context
+  ){
     //console.log("Drawing Rect:  ", sysRect)
-    context.fillStyle = "ff00ff";
 
     context.drawImage(
       sysIcon,
       sysRect['x'],
       sysRect['y'],
       sysRect['w'],
-      sysRect['h'],
+      sysRect['h']
     )
-    // context.fillRect(
-    //   sysRect['x'],
-    //   sysRect['y'],
-    //   sysRect['w'],
-    //   sysRect['h'],
-    // )
+
+    context.font = "15px Verdana";
+    context.fillStyle = "#0FFFF0"
+    context.fillText(
+      sysName,
+      sysRect['x'] + sysRect['w'],
+      sysRect['y']
+    )
+
+    console.log(sysName)
   }
 
   function drawConnectionLine(conLine, context){
-    //To do: handle colors and images
-    context.fillStyle = '#0000ff'
+    // Fill with gradient
+    context.strokeStyle = "#00FF0F";
+    context.lineWidth = 4;
 
     context.beginPath();
     context.moveTo(
@@ -174,13 +183,19 @@ const Drawer = props => {
     context.stroke();
   }
 
-  function drawMap(relSysRects, relConLines, sysIcon, context){
+  function drawMap(relSysRects, relConLines, mapData, sysIcon, context){
     relConLines.forEach(function(conLine){
       drawConnectionLine(conLine, context)
     })
 
     Object.keys(relSysRects).forEach(function(key){
-      drawSystemRectangle(relSysRects[key], sysIcon, context)
+      const sysName = mapData['systems'][key]['name']
+
+      drawSystemRectangle(
+        relSysRects[key], 
+        sysName,
+        sysIcon, 
+        context)
     })
   }
 
