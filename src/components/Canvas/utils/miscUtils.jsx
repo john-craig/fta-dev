@@ -1,5 +1,15 @@
+export function getScaleUnit(vpDim, unitSize){
+    return Math.min(...vpDim) / unitSize
+}
+
+
 export function getScaleFactor(vpDim, unitSize, zoom){
+    //return Math.min(...vpDim) / (unitSize * zoom)
     return Math.min(...vpDim) / (unitSize * zoom)
+}
+
+export function getScaleZoom(vpDim, zoom){
+    return Math.min(...vpDim) / zoom
 }
 
 //Used to determine if a click has collided with a

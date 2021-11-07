@@ -12,20 +12,20 @@ export const AppBar = () => {
     <AppBarStyle position="static" color="default" elevation={0}>
       <ToolbarStyle>
         <ToolbarTitleStyle variant="h6" color="inherit" noWrap>
-          Vouchers
+          From the Ashes Map
         </ToolbarTitleStyle>
 
         <nav>
           <LinkStyle variant="button" color="textPrimary" href="#">
-            Features
+            TBD.
           </LinkStyle>
 
           <LinkStyle variant="button" color="textPrimary" href="#">
-            Enterprise
+            TBD.
           </LinkStyle>
 
           <LinkStyle variant="button" color="textPrimary" href="#">
-            Support
+            TBD.
           </LinkStyle>
         </nav>
       </ToolbarStyle>

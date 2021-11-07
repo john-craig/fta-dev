@@ -1,6 +1,6 @@
 //This determines what the actual total dimensions of the map
 //must be based on positions of the further systems
-export function getActualTotalDimensions(mapData, vpDim, scaleFactor){
+export function getActualTotalDimensions(mapData, vpDim, scaleUnit){
     const systems = mapData['systems']
     var leastX = 0
     var leastY = 0
@@ -17,8 +17,8 @@ export function getActualTotalDimensions(mapData, vpDim, scaleFactor){
     })
 
     //The hypothetical edges of the map
-    const hypoWidth = (greatX - leastX) * scaleFactor
-    const hypoHeight = (greatY - leastY) * scaleFactor
+    const hypoWidth = (greatX - leastX) * scaleUnit
+    const hypoHeight = (greatY - leastY) * scaleUnit
 
     //If the hypothetical dimension is larger, use that; if the actual
     //viewport dimension is larger, use it instead. 
@@ -39,11 +39,11 @@ export function getActualTotalDimensions(mapData, vpDim, scaleFactor){
 //in order for it to be centered upon the logical position of a target
 //system. When the target system is undefined, it instead returns
 //the position for the viewport to be at the center of the map.
-export function getActualViewportPosition(targSys, vpDim, vpOff, totDim, scaleFactor){
+export function getActualViewportPosition(targSys, vpDim, vpOff, totDim, scaleUnit){
     //If there is a target system, use its actual position
     //in pixels to the target position. Otherwise, use the origin
     const targPos = (targSys) ? 
-        [targSys['pos'][0] * scaleFactor, targSys['pos'][1] * scaleFactor] :
+        [targSys['pos'][0] * scaleUnit, targSys['pos'][1] * scaleUnit] :
         [0, 0]
     
     //Add the target position and the current offsets to the 

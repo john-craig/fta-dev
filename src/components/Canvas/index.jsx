@@ -62,7 +62,8 @@ export default class Canvas extends React.Component {
             viewportOffset: [0, 0],
             mapData: mapData,
             targetSystem: undefined,
-            selectionPosition: undefined
+            selectionPosition: undefined,
+            wasDragged: false
         }
 
         this.handleSysIconLoad = this.handleSysIconLoad.bind(this)
@@ -153,15 +154,21 @@ export default class Canvas extends React.Component {
 
     //Used to determine whether a click collided with a system
     handleMouseClick(event){
-        console.log("Clicking mouse...")
-        const xPos = event.pageX
-        const yPos = event.pageY - this.getToolbarHeight()
+        if(!this.state.wasDragged){
+            console.log("Clicking mouse...")
+            const xPos = event.pageX
+            const yPos = event.pageY - this.getToolbarHeight()
 
-        const selPos = [xPos, yPos]
+            const selPos = [xPos, yPos]
 
-        this.setState({
-            selectionPosition: selPos
-        })
+            this.setState({
+                selectionPosition: selPos
+            })
+        } else {
+            this.setState({
+                wasDragged: false
+            })
+        }
     }
 
     //Used to handle a mouse drag event, which will move/translate

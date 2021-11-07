@@ -2,6 +2,8 @@ import { MinimizeTwoTone } from '@material-ui/icons'
 import React, { useRef, useEffect } from 'react'
 import {
   getScaleFactor,
+  getScaleUnit,
+  getScaleZoom,
   resolveSystemSelection
 } from '../utils/miscUtils'
 import {
@@ -61,6 +63,8 @@ const Drawer = props => {
 
     //Scale factor
     const scaleFactor = getScaleFactor(vpDim, unitSize, zoom)
+    const scaleUnit = getScaleUnit(vpDim, unitSize)
+    const scaleZoom = getScaleZoom(vpDim, zoom)
 
     // console.log("*** ZOOM ACTUALS ***")
     // console.log("Zoom:          ", zoom)
@@ -68,8 +72,8 @@ const Drawer = props => {
     // console.log("Scale Factor:  ", scaleFactor)
 
     //Determine the calculable actual dimensions in pixels
-    const totDim = getActualTotalDimensions(mapData, vpDim, scaleFactor)
-    const vpPos = getActualViewportPosition(targSys, vpDim, vpOff, totDim, scaleFactor)
+    const totDim = getActualTotalDimensions(mapData, vpDim, scaleUnit)
+    const vpPos = getActualViewportPosition(targSys, vpDim, vpOff, totDim, scaleUnit)
 
     // console.log("*** BASE ACTUALS ***")
     // console.log("Actual Viewport Dimensions: ", vpDim)
@@ -77,8 +81,8 @@ const Drawer = props => {
     // console.log("Actual Total Dimensions:    ", totDim)
 
     //Logical positions and dimensions of viewport and canvas
-    const logVpPos = getLogicalViewportPosition(vpPos, scaleFactor)
     const logVpDim = getLogicalViewportDimensions(vpDim, scaleFactor)
+    const logVpPos = getLogicalViewportPosition(targSys, vpOff, vpDim, totDim, scaleFactor, scaleUnit)
     const logTotDim = getLogicalTotalDimensions(totDim, scaleFactor)
 
     // console.log("*** BASE LOGICALS ***")
@@ -88,7 +92,7 @@ const Drawer = props => {
 
     //Logical positions of systems and connections
     const logVisSys = getLogicallyVisibleSystems(mapData, logVpPos, logVpDim, logTotDim)
-    const logVisCons = getLogicallyVisibleConnections(mapData, logVisSys, logTotDim)
+    const logVisCons = getLogicallyVisibleConnections(mapData, logVisSys, logVpPos, logVpDim, logTotDim)
 
     // console.log("*** MAP LOGICALS ***")
     // console.log("Logically Visible Systems:       ", logVisSys)
@@ -141,7 +145,6 @@ const Drawer = props => {
 
   function drawSystemRectangle(
     sysRect,
-    sysName,
     sysIcon, 
     context
   ){
@@ -154,7 +157,9 @@ const Drawer = props => {
       sysRect['w'],
       sysRect['h']
     )
+  }
 
+  function drawSystemName(sysRect, sysName, context){
     context.font = "15px Verdana";
     context.fillStyle = "#0FFFF0"
     context.fillText(
@@ -162,8 +167,6 @@ const Drawer = props => {
       sysRect['x'] + sysRect['w'],
       sysRect['y']
     )
-
-    console.log(sysName)
   }
 
   function drawConnectionLine(conLine, context){
@@ -193,9 +196,14 @@ const Drawer = props => {
 
       drawSystemRectangle(
         relSysRects[key], 
-        sysName,
         sysIcon, 
         context)
+      
+      drawSystemName(
+        relSysRects[key],
+        sysName,
+        context
+      )
     })
   }
 
