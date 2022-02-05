@@ -28,9 +28,11 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "axios": "^0.20.0",
+    "public-google-sheets-parser": "^1.2.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "reactn": "^2.2.7",
+    "regenerator-runtime": "^0.13.9",
     "styled-components": "^5.1.1",
     "wouter": "^2.5.1"
   },

@@ -5,6 +5,7 @@ import { setGlobal } from "reactn";
 import { CssBaseline } from "@material-ui/core";
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { Router, Redirect, Route, Switch } from "wouter";
+import 'regenerator-runtime/runtime'
 
 import AppBar from "./components/AppBar";
 import { defaultGlobalState } from "./services/constants";

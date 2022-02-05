@@ -1,0 +1,1 @@
+tar -cvzf ../bak/db-backup-"$(date)".tar.gz ../prod
