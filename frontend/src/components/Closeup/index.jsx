@@ -47,10 +47,10 @@ export default class Closeup extends React.Component {
             ],
             'fleets': [
                 {
-                    'distance': 10,
+                    'distance': 6,
                     'angle': -90,
                     'color': "#FF00FF",
-                    'number': 3
+                    'number': 11
                 }
             ]
         }

@@ -35,10 +35,10 @@ export function drawShip(image, length, rotation, position, color, context){
     shipCanvas = recolorImage(image, shipCanvas, color)
 
     const actualDimensions = getActualDimensions(length, [shipCanvas.width, shipCanvas.height])
-    //const adjustedPosition = getAdjustedPosition(position, actualDimensions)
+    const adjustedPosition = getAdjustedPosition(position, actualDimensions)
 
-    context.drawImage(shipCanvas, position[0], position[1], length, length)
-    //context.drawImage(shipCanvas, adjustedPosition[0], adjustedPosition[1], actualDimensions[0], actualDimensions[1])
+    //context.drawImage(shipCanvas, position[0], position[1], length, length)
+    context.drawImage(shipCanvas, adjustedPosition[0], adjustedPosition[1], actualDimensions[0], actualDimensions[1])
 }
 
 export function drawFleet(image, length, angle, rotation, position, color, number, context){
@@ -56,12 +56,12 @@ export function drawFleet(image, length, angle, rotation, position, color, numbe
         for(var j=0;j<fleetRows[i];j++){
             shipDelta[1] = horizontalOffset * (j - ((fleetRows[i] - 1) / 2))
 
-            console.log(i + " " + j)
-            console.log(shipDelta)
+            //There's some unaccounted for term here that I don't seem
+            //to be grasping... but idk what it is
 
             const rotShipDelta = [
-                Math.cos(angle) * shipDelta[0] - Math.sin(angle) * shipDelta[1],
-                Math.cos(angle) * shipDelta[1] + Math.sin(angle) * shipDelta[0]
+                Math.cos((Math.PI/180)*angle) * shipDelta[0] - Math.sin((Math.PI/180)*angle) * shipDelta[1],
+                Math.cos((Math.PI/180)*angle) * shipDelta[1] + Math.sin((Math.PI/180)*angle) * shipDelta[0]
             ]
             const shipFormationPosition = [
                 position[0] + rotShipDelta[0],
@@ -75,14 +75,14 @@ export function drawFleet(image, length, angle, rotation, position, color, numbe
 
 export function getFleetRows(number){
     //The middlemost row will have about half
-    var rows = [Math.ceil(number / 2)]
+    var rows = [Math.ceil(Math.log2(number))]
 
     var rem = number - rows[0]
     var top = 0;
     var bottom = 0
     while(rem > 0){
-        top = Math.floor(rem / 2) > 0 ? Math.floor(rem / 2) : 1
-        bottom = Math.floor(rem / 2) > 0 ? Math.floor(rem / 2) : 1
+        top = Math.floor(Math.log2(rem)) > 0 ? Math.floor(Math.log2(rem)) : 1
+        bottom = Math.floor(Math.log2(rem)) > 0 ? Math.floor(Math.log2(rem)) : 1
 
         if(rem - top >= 0){
             rem -= top
