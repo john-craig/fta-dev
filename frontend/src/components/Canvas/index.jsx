@@ -69,6 +69,8 @@ export default class Canvas extends React.Component {
                 zoom: this.MAX_ZOOM_IN
             })
         }
+
+
     }
 
     componentWillUnmount() {
@@ -157,8 +159,6 @@ export default class Canvas extends React.Component {
     }
 
     handleMouseDoubleClick(event){
-        event.preventDefault()
-
         const xPos = event.pageX
         const yPos = event.pageY - this.getToolbarHeight()
 
@@ -222,7 +222,7 @@ export default class Canvas extends React.Component {
                 this.props.setZoomedSystem(targSysId)
             } else {
                 console.log("Somewhere else on the map was double-clicked")
-                this.props.unsetZoomedSystem()
+                this.props.unsetFocusedSystem()
             }
 
             this.setState({

@@ -24,7 +24,7 @@ export default class Map extends React.Component {
 
   async componentDidMount(){
     const mapData = await this.getMapData();
-    console.log(mapData)
+    //console.log(mapData)
 
     this.setState({
       mapData: mapData

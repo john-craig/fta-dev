@@ -7,7 +7,7 @@ import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { Router, Redirect, Route, Switch } from "wouter";
 import 'regenerator-runtime/runtime'
 import { defaultGlobalState } from "./services/constants";
-
+import './styles.css'
 
 import AppBar from "./components/AppBar";
 import LoginDialog from "./components/LoginDialog";
