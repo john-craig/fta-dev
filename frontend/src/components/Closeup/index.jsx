@@ -48,8 +48,9 @@ export default class Closeup extends React.Component {
             'fleets': [
                 {
                     'distance': 10,
-                    'angle': 125,
-                    'color': "#FF00FF"
+                    'angle': -90,
+                    'color': "#FF00FF",
+                    'number': 3
                 }
             ]
         }
@@ -183,7 +184,7 @@ export default class Closeup extends React.Component {
         > {
             (vpDim[0] != -1) &&
             (mapBg) &&
-            (shipImgs.length > 1) &&
+            (shipImgs.length > 7) &&
             <Drawer
                 selPos={selectionPosition}
                 setTargSys={this.setTargetSystem}

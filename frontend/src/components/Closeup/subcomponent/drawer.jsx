@@ -5,10 +5,10 @@ import {
     getActualDimensions,
     getAdjustedPosition
 } from '../utils/actualUtils'
+
 import {
-  createCanvas,
-    recolorImage, rotateCanvas, rotateImage
-} from '../utils/imageUtils'
+  drawStar, drawPlanet, drawFleet
+} from '../utils/drawUtils'
 
 /*
 
@@ -57,13 +57,15 @@ const Drawer = props => {
     const actualFleets = sysData['fleets'].map(fleet => {
         return {
             'length': unitSize * shipSize,
+            'angle': fleet['angle'],
             'rotation': fleet['angle'] + 90,
             'position': getActualPosition(
                 getActualDistance(unitSize, fleet['distance']), 
                 fleet['angle'], 
                 vpDim
             ),
-            'color': fleet['color']
+            'color': fleet['color'],
+            'number': fleet['number']
         }
     })
 
@@ -95,41 +97,7 @@ const Drawer = props => {
     Drawing Functions
   */
 
-  function drawStar(radius, position, context){
-
-
-    context.beginPath();
-    context.arc(position[0], position[1], radius, 0, Math.PI * 2, true);
-    context.closePath();
-
-    context.fillStyle="#FFFFFF"
-    context.fill()
-  }
-
-  function drawPlanet(radius, position, context){
-    context.beginPath();
-    context.arc(position[0], position[1], radius, 0, Math.PI * 2, true);
-    context.closePath();
-
-    context.fillStyle="#FFFFFF"
-    context.fill()
-  }
-
-  function drawFleet(image, length, rotation, position, color, context){
-    console.log("Drawing fleet at " + position + " with rotation " + rotation + " and length " + length)
-
-    var fleetCanvas = createCanvas(
-      [Math.max(image.height, image.width), Math.max(image.height, image.width)]
-    )
-    fleetCanvas = rotateCanvas(fleetCanvas, rotation)
-    fleetCanvas = recolorImage(image, fleetCanvas, color)
-
-    const actualDimensions = getActualDimensions(length, [fleetCanvas.width, fleetCanvas.height])
-    //const adjustedPosition = getAdjustedPosition(position, actualDimensions)
-
-    context.drawImage(fleetCanvas, position[0], position[1], length, length)
-    //context.drawImage(fleetCanvas, adjustedPosition[0], adjustedPosition[1], actualDimensions[0], actualDimensions[1])
-  }
+  
 // 
   function drawMap(actualStar, actualPlanets, actualFleets, shipImgs, context){
     drawStar(
@@ -143,7 +111,7 @@ const Drawer = props => {
     })
 
     actualFleets.forEach(fleet => {
-        drawFleet(shipImgs[0], fleet['length'], fleet['rotation'], fleet['position'], fleet['color'], context)
+        drawFleet(shipImgs[7], fleet['length'], fleet['angle'], fleet['rotation'], fleet['position'], fleet['color'], fleet['number'], context)
     })
   }
 
