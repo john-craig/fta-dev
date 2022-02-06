@@ -4,6 +4,7 @@ import PublicGoogleSheetsParser from 'public-google-sheets-parser'
 
 import { MainContainer } from "./styles";
 import Canvas from "../../components/Canvas";
+import Closeup from "../../components/Closeup";
 import Legend from "../../components/Legend";
 
 export default class Map extends React.Component {
@@ -116,16 +117,20 @@ export default class Map extends React.Component {
     return (
       <MainContainer>
         { mapData &&
-          <div><Canvas
-            mapData={mapData}
-            isZoomed={isZoomed}
-            targetSystem={targetSystem}
+          <div>
+            { (isZoomed) ?
+              <Closeup /> :
+              <Canvas
+                mapData={mapData}
+                isZoomed={isZoomed}
+                targetSystem={targetSystem}
 
-            setFocusedSystem={this.setFocusedSystem}
-            unsetFocusedSystem={this.unsetFocusedSystem}
-            setZoomedSystem={this.setZoomedSystem}
-            unsetZoomedSystem={this.unsetZoomedSystem}
-          />
+                setFocusedSystem={this.setFocusedSystem}
+                unsetFocusedSystem={this.unsetFocusedSystem}
+                setZoomedSystem={this.setZoomedSystem}
+                unsetZoomedSystem={this.unsetZoomedSystem}
+              />
+            }
           { isFocused &&
             <Legend
               name={mapData['systems'][targetSystem]['name']}
