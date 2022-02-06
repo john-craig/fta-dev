@@ -17,6 +17,7 @@ A brief list of projects which may be applicable for development:
  - zoom in and out on the map
  - scroll across the map
  - show information about system on single click, zoom in on double click
+ - add a screen to login/register players and nations
 
 **Planned Features (MVP)**
  - display information about system ownership/holdings in a system
@@ -28,13 +29,13 @@ A brief list of projects which may be applicable for development:
  - *allow players to specify logos for their nations
 
 **Planned Features (Post-MVP)**
- - add a screen to login/register players and nations
  - menus for controlling ship deployment/movements
  - track which ships are visible to which players and display them conditionally for each player
  - *make it possible to highlight the borders of all systems owned by a given faction
  - *allow players to specify the color for the highlight border of their nation/ships
 
-*Stretch Goals
+**Stretch Goals**
+ - 
 
 **Resources:**
  - https://github.com/explorercorps/explorercorps.github.io

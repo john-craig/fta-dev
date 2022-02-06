@@ -7,5 +7,18 @@ function validateNation(nation){
 
 }
 
+//Validate the territory sheet. Should return
+//either zero for success, or a string indicating
+//what is wrong with the sheet
+function validateTerritorySheet(link){
+
+}
+
+//Validate the military sheet. Should return
+//either zero for success, or a string indicating
+//what is wrong with the sheet
+function validateMilitarySheet(link){
+
+}
 
 module.exports = {}
