@@ -7,7 +7,9 @@ import {
   LinkStyle,
 } from "./styles";
 
-export const AppBar = () => {
+export const AppBar = (props) => {
+  const userId = props.userId
+
   return (
     <AppBarStyle position="static" color="default" elevation={0}>
       <ToolbarStyle>
@@ -16,17 +18,23 @@ export const AppBar = () => {
         </ToolbarTitleStyle>
 
         <nav>
-          <LinkStyle variant="button" color="textPrimary" href="#">
-            TBD.
-          </LinkStyle>
+          { userId ? 
+            (
+              <LinkStyle variant="button" color="textPrimary" onClick={props.logout}>
+                Log Out
+              </LinkStyle>
+            ) : (
+              <div>
+              <LinkStyle variant="button" color="textPrimary" onClick={props.openLogin}>
+                Log In
+              </LinkStyle>
 
-          <LinkStyle variant="button" color="textPrimary" href="#">
-            TBD.
-          </LinkStyle>
-
-          <LinkStyle variant="button" color="textPrimary" href="#">
-            TBD.
-          </LinkStyle>
+              <LinkStyle variant="button" color="textPrimary" onClick={props.openSignup}>
+                Sign Up
+              </LinkStyle>
+              </div>
+            )
+          }
         </nav>
       </ToolbarStyle>
     </AppBarStyle>
