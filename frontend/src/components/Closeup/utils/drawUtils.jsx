@@ -46,7 +46,7 @@ export function drawFleet(image, length, angle, rotation, position, color, numbe
     const horizontalOffset = length * 1.1
     const verticalOffset = (image.height * (length / image.width)) * 1.1
 
-    console.log(fleetRows)
+    //console.log(fleetRows)
 
     var shipDelta = []
     for(var i=0;i<fleetRows.length;i++){

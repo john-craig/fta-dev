@@ -1,3 +1,5 @@
+import { getScaleFactor, getScaleUnit } from "./miscUtils"
+
 //This determines what the actual total dimensions of the map
 //must be based on positions of the further systems
 export function getActualTotalDimensions(mapData, vpDim, scaleUnit){
@@ -78,4 +80,14 @@ export function getActualViewportPosition(targSys, vpDim, vpOff, totDim, scaleUn
     */
 
     return vpPos
+}
+
+//Determines the actual position of a system
+export function getActualPosition(targSys, vpDim, unitSize){
+    const scaleUnit = getScaleUnit(vpDim, unitSize)
+
+    return [
+        targSys['pos'][0] * scaleUnit,
+        targSys['pos'][1] * scaleUnit
+    ]
 }

@@ -40,3 +40,8 @@ A brief list of projects which may be applicable for development:
 **Resources:**
  - https://github.com/explorercorps/explorercorps.github.io
  - https://github.com/BrettlesSr/roas-ang-map
+
+
+https://creativecommons.org/licenses/by-sa/4.0/
+<a href="https://www.freevector.com/spaceships-silhouettes-pack#">FreeVector.com</a>
+<a href="https://www.freevector.com/spaceships-silhouettes-set#">FreeVector.com</a>

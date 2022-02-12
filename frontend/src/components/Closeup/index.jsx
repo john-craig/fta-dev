@@ -25,6 +25,8 @@ import ShipImg19 from "../../assets/ships/ship19.png"
 import ShipImg20 from "../../assets/ships/ship20.png"
 import ShipImg21 from "../../assets/ships/ship21.png"
 
+import { fadeIn, fadeOut } from './subcomponent/transitionTimer'
+
 export default class Closeup extends React.Component {
 
     constructor(props){
@@ -32,6 +34,12 @@ export default class Closeup extends React.Component {
 
         const windowWidth = window.innerWidth
         const windowHeight = window.innerHeight
+
+        var opacity = 1.0
+
+        if(props.mapState == "shiftIn" || props.mapState == "full"){
+            opacity = 0;
+        }
 
 
         const sysData = {
@@ -56,6 +64,7 @@ export default class Closeup extends React.Component {
         }
 
         this.state = {
+            opacity: opacity,
             viewportDimensions: [windowWidth, windowHeight],
             selectionPosition: undefined,
             sysData: sysData,
@@ -68,6 +77,8 @@ export default class Closeup extends React.Component {
         this.handleScroll = this.handleScroll.bind(this);
         this.handleMouseClick = this.handleMouseClick.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+
+        this.changeOpacity = this.changeOpacity.bind(this);
     }
 
     /* Component Mounting */
@@ -95,7 +106,14 @@ export default class Closeup extends React.Component {
     }
       
     componentDidUpdate(prevProps){
+        if(prevProps.mapState != this.props.mapState && this.props.mapState == "shiftIn"){
+            fadeIn(this.changeOpacity).then(() => {this.props.setMapState("close")})
+        }
 
+        if(prevProps.mapState != this.props.mapState && this.props.mapState == "shiftOut"){
+            //console.log("Fading out Closeup")
+            fadeOut(this.changeOpacity)
+        }
     }
 
     componentWillUnmount() {
@@ -140,7 +158,12 @@ export default class Closeup extends React.Component {
 
     //Used to handle mouse scrolls, which zoom the map in and out
     handleScroll(event){
-        event.preventDefault()
+        //event.preventDefault()
+        console.log("Scroll event occurring")
+
+        if(event.deltaY > 1){
+            this.props.unsetZoomedSystem();
+        }
     }
 
     //Used to determine whether a click collided with a system
@@ -149,7 +172,6 @@ export default class Closeup extends React.Component {
     }
 
     /* Drawer Update Functions
-
     
 
     /* Drawer Callback Functions */
@@ -160,8 +182,21 @@ export default class Closeup extends React.Component {
         
     }
 
+    /* Timer Callback Functions */
+    changeOpacity(delta){
+        var newOpacity = this.state['opacity'] + delta
+        
+        if(newOpacity < 0){ newOpacity = 0;}
+        else if (newOpacity > 1){ newOpacity = 1;}
+
+        this.setState({
+            opacity: newOpacity
+        })
+    }
+
 
     render(){
+        const opacity = this.state['opacity']
         const selectionPosition = this.state['selectionPosition']
         const vpDim = this.state['viewportDimensions']
 
@@ -189,6 +224,7 @@ export default class Closeup extends React.Component {
                 selPos={selectionPosition}
                 setTargSys={this.setTargetSystem}
                 vpDim={vpDim}
+                opacity={opacity}
 
                 sysData={sysData}
                 

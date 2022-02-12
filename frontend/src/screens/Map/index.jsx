@@ -7,16 +7,19 @@ import Canvas from "../../components/Canvas";
 import Closeup from "../../components/Closeup";
 import Legend from "../../components/Legend";
 
+import Background from "../../assets/images/background.jpg"
+
 export default class Map extends React.Component {
   constructor(props){
     super(props)
 
     this.state = {
       isFocused: false,
-      isZoomed: false,
+      mapState: "full",
       targetSystem: undefined
     }
 
+    this.setMapState = this.setMapState.bind(this);
     this.setFocusedSystem = this.setFocusedSystem.bind(this);
     this.unsetFocusedSystem = this.unsetFocusedSystem.bind(this);
     this.setZoomedSystem = this.setZoomedSystem.bind(this);
@@ -64,6 +67,14 @@ export default class Map extends React.Component {
     return mapData
   }
 
+  setMapState(state){
+    console.log(state)
+
+    this.setState({
+      mapState: state
+    })
+  }
+
   //Focused System:
   /*
     The focused system has its information being currently displayed.
@@ -80,7 +91,7 @@ export default class Map extends React.Component {
   unsetFocusedSystem(){
     this.setState({
       isFocused: false,
-      isZoomed: false,
+      mapState: "shiftIn",
       targetSystem: undefined
     })
   }
@@ -97,40 +108,68 @@ export default class Map extends React.Component {
   setZoomedSystem(sysId){
     this.setState({
       isFocused: true,
-      isZoomed: true,
+      mapState: "shiftIn",
       targetSystem: sysId
     })
   }
 
   unsetZoomedSystem(){
+    console.log("Zooming out from close up")
     this.setState({
-      isZoomed: false
+      mapState: "shiftOut"
     })
   }
 
   render(){
     const mapData = this.state.mapData;
-    const isZoomed = this.state.isZoomed;
-    const isFocused = this.state.isFocused;
+    const isFocused = this.state.isFocused
+    const mapState = this.state.mapState
     const targetSystem = this.state.targetSystem;
 
     return (
       <MainContainer>
         { mapData &&
-          <div>
-            { (isZoomed) ?
-              <Closeup /> :
+          <div
+            className="background"
+          >
+              <Closeup 
+                mapState={mapState}
+                setMapState={this.setMapState}
+                unsetZoomedSystem={this.unsetZoomedSystem}
+              /> 
               <Canvas
                 mapData={mapData}
-                isZoomed={isZoomed}
+                isZoomed={false}
+                mapState={mapState}
                 targetSystem={targetSystem}
 
+                setMapState={this.setMapState}
                 setFocusedSystem={this.setFocusedSystem}
                 unsetFocusedSystem={this.unsetFocusedSystem}
                 setZoomedSystem={this.setZoomedSystem}
                 unsetZoomedSystem={this.unsetZoomedSystem}
               />
+            {/* { (mapState=="close" || mapState=="shiftIn" || mapState == "shiftOut") &&
+              <Closeup 
+                mapState={mapState}
+                setMapState={this.setMapState}
+                unsetZoomedSystem={this.unsetZoomedSystem}
+              /> 
             }
+            { (mapState=="full" || mapState=="shiftIn" || mapState == "shiftOut") &&
+              <Canvas
+                mapData={mapData}
+                isZoomed={false}
+                mapState={mapState}
+                targetSystem={targetSystem}
+
+                setMapState={this.setMapState}
+                setFocusedSystem={this.setFocusedSystem}
+                unsetFocusedSystem={this.unsetFocusedSystem}
+                setZoomedSystem={this.setZoomedSystem}
+                unsetZoomedSystem={this.unsetZoomedSystem}
+              />
+            } */}
           { isFocused &&
             <Legend
               name={mapData['systems'][targetSystem]['name']}

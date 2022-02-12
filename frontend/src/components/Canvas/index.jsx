@@ -1,5 +1,8 @@
 import React from 'react'
 import Drawer from './subcomponent/drawer'
+import {
+    handleTransition, fadeIn
+} from './subcomponent/transitionTimer'
 
 import SystemIcon from "../../assets/images/solar-system.png"
 import MapBackground from "../../assets/images/background.jpg"
@@ -12,7 +15,14 @@ export default class Canvas extends React.Component {
     constructor(props){
         super(props)
 
+        var opacity = 1.0
+
+        if(props.mapState == "shiftIn"){
+            opacity = 0;
+        }
+
         this.state = {
+            opacity: opacity,
             zoom: 1.0,
             viewportDimensions: [-1, -1],
             viewportOffset: [0, 0],
@@ -31,7 +41,11 @@ export default class Canvas extends React.Component {
         this.handleMouseMovement = this.handleMouseMovement.bind(this)
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+
         this.setTargetSystem = this.setTargetSystem.bind(this)
+        this.changeZoom = this.changeZoom.bind(this)
+        this.changeOffset = this.changeOffset.bind(this)
+        this.changeOpacity = this.changeOpacity.bind(this)
     }
 
     /* Component Mounting */
@@ -54,9 +68,14 @@ export default class Canvas extends React.Component {
     componentDidUpdate(prevProps){
         //If the focused system has either changed to another system, or if 
         //it has become defined where it wasn't before
+        if(prevProps.mapState != this.props.mapState && this.props.mapState == "shiftOut"){
+            fadeIn(this.changeOpacity).then(() => {this.props.setMapState("full")})
+        }
+
         if(
-            this.props['targetSystem'] && this.props['isZoomed'] &&
-            (this.props['isZoomed'] != prevProps['isZoomed'] ||
+            this.props['targetSystem'] && 
+            this.props['mapStatus'] == "close" &&
+            (this.props['mapStatus'] != prevProps['mapStatus'] ||
             this.props['targetSystem'] != prevProps['targetSystem'])
         ){
             const targSys = this.props.mapData['systems'][this.props['targetSystem']]
@@ -68,6 +87,8 @@ export default class Canvas extends React.Component {
                 viewportOffset: vpOff,
                 zoom: this.MAX_ZOOM_IN
             })
+
+            console.log(targSys)
         }
 
 
@@ -119,7 +140,7 @@ export default class Canvas extends React.Component {
 
     //Used to handle mouse scrolls, which zoom the map in and out
     handleScroll(event){
-        event.preventDefault()
+        //event.preventDefault()
         var newZoom = this.state['zoom']
 
         if(event.deltaY < 1){
@@ -130,7 +151,7 @@ export default class Canvas extends React.Component {
 
         //If we are zooming out after focusing on a system,
         //then we are no longer focused on it
-        if(this.props.isZoomed && newZoom != this.state.zoom){
+        if(this.props.mapState == "close" && newZoom != this.state.zoom){
             this.props.unsetZoomedSystem();
         }
 
@@ -202,7 +223,7 @@ export default class Canvas extends React.Component {
     
     //This handler is called by the drawer if it resolves
     //a mouse click to a target system
-    setTargetSystem(targSysId){
+    async setTargetSystem(targSysId){
         /*
             The zoomed system has the map zoomed in on it. A zoomed system is always focused, but a focused system
             is not always zoomed.
@@ -218,10 +239,20 @@ export default class Canvas extends React.Component {
         */
         if(this.state.doubleClick){
             if(targSysId){
-                console.log("A system was double-clicked")
-                this.props.setZoomedSystem(targSysId)
+                var targSys = this.props.mapData['systems'][targSysId]
+                
+                handleTransition(
+                    this.state['viewportOffset'],
+                    this.state['viewportDimensions'],
+                    this.state.zoom,
+                    targSys,
+                    this.changeOffset,
+                    this.changeZoom,
+                    this.changeOpacity
+                ).then(() => {
+                    this.props.setZoomedSystem(targSysId)
+                })
             } else {
-                console.log("Somewhere else on the map was double-clicked")
                 this.props.unsetFocusedSystem()
             }
 
@@ -230,16 +261,47 @@ export default class Canvas extends React.Component {
             })
         } else {
             if(targSysId){
-                console.log("A system was single-clicked")
+                //console.log("A system was single-clicked")
                 this.props.setFocusedSystem(targSysId)
             } else {
-                console.log("Somewhere else on the map was single-clicked")
+                //console.log("Somewhere else on the map was single-clicked")
             }
         }
     }
 
+    /* Timer Callback Functions */
+    changeOffset(delta){
+        const newOffset = [
+            this.state['viewportOffset'][0] + delta[0],
+            this.state['viewportOffset'][1] + delta[1]
+        ]
+
+        this.setState({
+            viewportOffset: newOffset
+        })
+    }
+    
+    changeZoom(delta){
+        const newZoom = this.state['zoom'] + delta
+
+        this.setState({
+            zoom: newZoom
+        })
+    }
+
+    changeOpacity(delta){
+        var newOpacity = this.state['opacity'] + delta
+        
+        if(newOpacity < 0){ newOpacity = 0;}
+        else if (newOpacity > 1){ newOpacity = 1;}
+
+        this.setState({
+            opacity: newOpacity
+        })
+    }
 
     render(){
+        const opacity = this.state['opacity']
         const zoom = this.state['zoom']
         const vpDim = this.state['viewportDimensions']
         const vpOff = this.state['viewportOffset']
@@ -270,6 +332,7 @@ export default class Canvas extends React.Component {
             (sysIcon) &&
             (mapBg) &&
             <Drawer
+                opacity={opacity}
                 zoom={zoom}
                 vpDim={vpDim}
                 vpOff={vpOff}

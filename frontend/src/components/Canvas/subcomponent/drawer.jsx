@@ -48,6 +48,7 @@ const Drawer = props => {
   const unitSize = 20
 
   useEffect(() => {
+    const opacity = props.opacity
     const zoom = props.zoom
     const vpDim = props.vpDim
     const vpOff = props.vpOff
@@ -59,7 +60,9 @@ const Drawer = props => {
 
     // context.fillStyle = '#999999'
     // context.fillRect(0, 0, vpDim[0], vpDim[1])
-    context.drawImage(props.mapBg, 0, 0, vpDim[0], vpDim[1])
+    //context.drawImage(props.mapBg, 0, 0, vpDim[0], vpDim[1])
+    context.clearRect(0, 0, vpDim[0], vpDim[1]);
+    context.globalAlpha = opacity;
 
     //Scale factor
     const scaleFactor = getScaleFactor(vpDim, unitSize, zoom)
@@ -133,6 +136,7 @@ const Drawer = props => {
       props.sysIcon,
       context)
   }, [
+    props.opacity,
     props.zoom,
     props.vpOff,
     props.selPos,

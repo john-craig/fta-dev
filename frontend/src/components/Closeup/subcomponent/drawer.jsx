@@ -29,15 +29,18 @@ const Drawer = props => {
   useEffect(() => {
     const sysData = props.sysData
     const vpDim = props.vpDim
+    const opacity = props.opacity
 
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
 
     // context.fillStyle = '#999999'
     // context.fillRect(0, 0, vpDim[0], vpDim[1])
-    context.drawImage(props.mapBg, 0, 0, vpDim[0], vpDim[1])
+    // context.drawImage(props.mapBg, 0, 0, vpDim[0], vpDim[1])
+    context.clearRect(0, 0, vpDim[0], vpDim[1]);
+    context.globalAlpha = opacity;
 
-    console.log(sysData)
+    //console.log(sysData)
     const actualStar = {
         'radius': unitSize * starSizes[sysData['star']['size']],
         'position': [vpDim[0] / 2, vpDim[1] / 2]
@@ -90,7 +93,8 @@ const Drawer = props => {
     )
   }, [
     props.selPos,
-    props.targSys
+    props.targSys,
+    props.opacity
   ])
   
   /*
