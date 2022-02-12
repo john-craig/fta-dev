@@ -27,6 +27,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.60",
     "axios": "^0.20.0",
     "password-hash": "^1.2.2",
     "public-google-sheets-parser": "^1.2.6",

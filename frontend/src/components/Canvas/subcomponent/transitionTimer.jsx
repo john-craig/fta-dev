@@ -67,15 +67,10 @@ export function zoomIntoTarget(
         (endPos[0] - curOff[0]) / numFrames,
         (endPos[1] - curOff[1]) / numFrames
     ]
-    // var deltaPos = [
-    //     (endPos[0] - curOff[0] ) / numFrames,
-    //     (endPos[1] - curOff[1] ) / numFrames
-    // ]
-
-    console.log("Scale Unit: ", scaleUnit)
-    console.log("Scale Unit: ", scaleFactor)
-    console.log("Ending Position:", endPos)
-    console.log("Current Offset:", curOff)
+    // console.log("Scale Unit: ", scaleUnit)
+    // console.log("Scale Unit: ", scaleFactor)
+    // console.log("Ending Position:", endPos)
+    // console.log("Current Offset:", curOff)
 
 
     function incrementState(){

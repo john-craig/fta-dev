@@ -6,6 +6,7 @@ import { MainContainer } from "./styles";
 import Canvas from "../../components/Canvas";
 import Closeup from "../../components/Closeup";
 import Legend from "../../components/Legend";
+import Dropdown from "../../components/Dropdown";
 
 import Background from "../../assets/images/background.jpg"
 
@@ -106,6 +107,8 @@ export default class Map extends React.Component {
     If the system is not focused, it is not zoomed.
   */
   setZoomedSystem(sysId){
+    console.log("Setting zoomed system")
+
     this.setState({
       isFocused: true,
       mapState: "shiftIn",
@@ -149,33 +152,16 @@ export default class Map extends React.Component {
                 setZoomedSystem={this.setZoomedSystem}
                 unsetZoomedSystem={this.unsetZoomedSystem}
               />
-            {/* { (mapState=="close" || mapState=="shiftIn" || mapState == "shiftOut") &&
-              <Closeup 
-                mapState={mapState}
-                setMapState={this.setMapState}
-                unsetZoomedSystem={this.unsetZoomedSystem}
-              /> 
-            }
-            { (mapState=="full" || mapState=="shiftIn" || mapState == "shiftOut") &&
-              <Canvas
-                mapData={mapData}
-                isZoomed={false}
-                mapState={mapState}
-                targetSystem={targetSystem}
-
-                setMapState={this.setMapState}
-                setFocusedSystem={this.setFocusedSystem}
-                unsetFocusedSystem={this.unsetFocusedSystem}
-                setZoomedSystem={this.setZoomedSystem}
-                unsetZoomedSystem={this.unsetZoomedSystem}
-              />
-            } */}
           { isFocused &&
             <Legend
               name={mapData['systems'][targetSystem]['name']}
               desc={mapData['systems'][targetSystem]['desc']}
             />
           }
+          <Dropdown
+            mapData={mapData}
+            setZoomedSystem={this.setZoomedSystem}
+          />
           </div>
         }
       </MainContainer>

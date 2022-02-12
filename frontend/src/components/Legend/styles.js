@@ -3,26 +3,11 @@ import styled from "styled-components";
 
 export const LegendPaper = styled(Paper)`
     position: absolute;
-    // left: 50vw;
-    // top: 5vh;
-    // width: 25vw;
-    // height; 90vh;
+    left: 70vw;
+    top: 10vh;
+    width: 25vw;
+    height: 80vh;
+    background-color: rgba(85,156,214,0.5);
+    box-shadow: 2px 2px blue;
+    padding: 15px;
 `;
-
-// export const AppBarStyle = styled(Bar)`
-//   border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
-//   position: absolute;
-//   z-index: 1;
-// `;
-
-// export const ToolbarStyle = styled(Toolbar)`
-//   flex-wrap: wrap;
-// `;
-
-// export const ToolbarTitleStyle = styled(Typography)`
-//   flex-grow: 1;
-// `;
-
-// export const LinkStyle = styled(Link)`
-//   margin: ${({ theme }) => theme.spacing(1, 1.5)};
-// `;

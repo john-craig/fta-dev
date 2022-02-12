@@ -72,23 +72,25 @@ export default class Canvas extends React.Component {
             fadeIn(this.changeOpacity).then(() => {this.props.setMapState("full")})
         }
 
-        if(
-            this.props['targetSystem'] && 
-            this.props['mapStatus'] == "close" &&
-            (this.props['mapStatus'] != prevProps['mapStatus'] ||
-            this.props['targetSystem'] != prevProps['targetSystem'])
-        ){
-            const targSys = this.props.mapData['systems'][this.props['targetSystem']]
-            const vpOff = [0, 0]
-
-            this.setState({
-                targetSystem: targSys,
-                selectionPosition: undefined,
-                viewportOffset: vpOff,
-                zoom: this.MAX_ZOOM_IN
+        if(prevProps.mapState != this.props.mapState && this.props.mapState == "shiftIn"){
+            //const vpOff = [0, 0]
+            var targSys = this.props.mapData['systems'][this.props.targetSystem]
+            
+            handleTransition(
+                this.state['viewportOffset'],
+                this.state['viewportDimensions'],
+                this.state.zoom,
+                targSys,
+                this.changeOffset,
+                this.changeZoom,
+                this.changeOpacity
+            ).then(()=>{
+                this.props.setMapState("close")
+                this.setState({
+                    selectionPosition: undefined,
+                    zoom: this.MAX_ZOOM_IN
+                })
             })
-
-            console.log(targSys)
         }
 
 
@@ -239,19 +241,7 @@ export default class Canvas extends React.Component {
         */
         if(this.state.doubleClick){
             if(targSysId){
-                var targSys = this.props.mapData['systems'][targSysId]
-                
-                handleTransition(
-                    this.state['viewportOffset'],
-                    this.state['viewportDimensions'],
-                    this.state.zoom,
-                    targSys,
-                    this.changeOffset,
-                    this.changeZoom,
-                    this.changeOpacity
-                ).then(() => {
-                    this.props.setZoomedSystem(targSysId)
-                })
+                this.props.setZoomedSystem(targSysId)
             } else {
                 this.props.unsetFocusedSystem()
             }

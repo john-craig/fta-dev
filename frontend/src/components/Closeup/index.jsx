@@ -106,8 +106,8 @@ export default class Closeup extends React.Component {
     }
       
     componentDidUpdate(prevProps){
-        if(prevProps.mapState != this.props.mapState && this.props.mapState == "shiftIn"){
-            fadeIn(this.changeOpacity).then(() => {this.props.setMapState("close")})
+        if(prevProps.mapState != this.props.mapState && this.props.mapState == "close"){
+            fadeIn(this.changeOpacity)
         }
 
         if(prevProps.mapState != this.props.mapState && this.props.mapState == "shiftOut"){
